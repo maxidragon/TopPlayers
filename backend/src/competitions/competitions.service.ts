@@ -24,20 +24,16 @@ export class CompetitionsService {
 
     async getCompetitorsId(competitionId: string) {
         try {
-            const response = await axios.get(`competitions/${competitionId}/competitors`, {
-                params: {
-                    per_page: 1000
-                }
-            });
+            const response = await axios.get(`competitions/${competitionId}/wcif/public`);
             const competitors = [];
-            response.data.map((competitor: any) => {
-                if (competitor.id) {
-                    competitors.push(competitor.id);
+            response.data.persons.map((competitor: any) => {
+                if (competitor.wcaId) {
+                    competitors.push(competitor.wcaId);
                 }
             });
             return competitors;
         } catch (error) {
-            //console.error(error);
+            console.error(error);
         }
     }
 }
