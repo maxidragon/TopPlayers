@@ -17,7 +17,15 @@ export class CompetitorsService {
             const response = await axios.get(`persons/${id}`);
             return response.data.personal_records;
         } catch (error) {
-            //console.error(error);
+            console.error(error);
+        }
+    }
+        async getPersonalRecordsForEvent(id: string, cube: string) {
+        try {
+            const response = await axios.get(`persons/${id}`);
+            return response.data.personal_records[cube];
+        } catch (error) {
+            console.error(error);
         }
     }
 }

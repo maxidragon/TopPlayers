@@ -10,6 +10,12 @@ export class CompetitionsController {
     async getCompetitionsId(@Param('start') start: string, @Param('end') end: string) {
         return await this.competitionsService.getCompetitionsId(start, end);
     }
+
+    @Get(':id/')
+    async getCompetitionsInfo(@Param('id') id: string) {
+        return await this.competitionsService.getCompetitionInfo(id);
+    }
+
     @Get(':id/competitors/')
     async getCompetitorsId(@Param('id') id: string) {
         return await this.competitionsService.getCompetitorsId(id);

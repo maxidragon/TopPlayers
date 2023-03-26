@@ -17,24 +17,36 @@ export class PlayersService {
 
         const start = `${nextFriday.getFullYear()}-${(nextFriday.getMonth() + 1).toString().padStart(2, '0')}-${nextFriday.getDate().toString().padStart(2, '0')}`;
         const end = `${nextSunday.getFullYear()}-${(nextSunday.getMonth() + 1).toString().padStart(2, '0')}-${nextSunday.getDate().toString().padStart(2, '0')}`;
+
         const competitions = await this.competitionsService.getCompetitionsId(start, end);
 
-        const topPlayers = [];
-        competitions.map(async (competition: any) => {
-            const competitors = await this.competitionsService.getCompetitorsId(competition);
-            const competitionTopPlayers = [];
-            for (const competitor of competitors) {
-                const personalRecords = await this.competitorsService.getPersonalRecords(competitor);
-                if (personalRecords !== undefined && personalRecords[cube] !== undefined && personalRecords[cube].average !== undefined) {
-                    if (personalRecords[cube].average.world_rank <= 25) {
-                        competitionTopPlayers.push(competitor);
+        let topPlayers = [];
+        await Promise.all(competitions.map(async (competition: any) => {
+            const competitionInfo = await this.competitionsService.getCompetitionInfo(competition);
+            if (competitionInfo.event_ids.includes(cube)) {
+                const competitors = await this.competitionsService.getCompetitorsId(competition);
+                const competitionTopPlayers = [];
+                for (const competitor of competitors) {
+                    const personalRecords = await this.competitorsService.getPersonalRecordsForEvent(competitor, cube);
+                    if (personalRecords && personalRecords.hasOwnProperty('average')) {
+                        if (personalRecords.average.world_rank <= 25) {
+                            competitionTopPlayers.push(competitor);
+                        }
                     }
                 }
+                for (const topPlayer of competitionTopPlayers) {
+                    const profile = await this.competitorsService.getCompetitorProfile(topPlayer);
+                    const player = {
+                        name: profile.person.name,
+                        id: topPlayer,
+                        profile: `https://www.worldcubeassociation.org/persons/${topPlayer}`,
+                        competition: competitionInfo.name,
+                        compWebsite: competitionInfo.url,
+                    };
+                    topPlayers.push(player);
+                }
             }
-            //TODO
-            //Add competition name and return array of objects with name and wcaid of top player
-            topPlayers.push(competitionTopPlayers);
-        });
+        }));
         return topPlayers;
     }
 }

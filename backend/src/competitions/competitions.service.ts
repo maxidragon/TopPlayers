@@ -21,7 +21,14 @@ export class CompetitionsService {
             console.error(error);
         }
     }
-
+    async getCompetitionInfo(id: string) {
+        try {
+            const response = await axios.get('competitions/' + id);
+            return response.data;
+        } catch (error) {
+            console.error(error);
+        }
+    }
     async getCompetitorsId(competitionId: string) {
         try {
             const response = await axios.get(`competitions/${competitionId}/wcif/public`);
