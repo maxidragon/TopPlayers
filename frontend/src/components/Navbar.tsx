@@ -7,7 +7,7 @@ const Navbar = () => {
         <AppBar position="static" color="primary">
             <Toolbar>
                 <Typography variant="h6" color="inherit" style={{flexGrow: 1}}>
-                    TopPlayers
+                    Top players
                 </Typography>
                 <IconButton href="https://github.com/maxidragon/TopPlayers" target="_blank" rel="noopener noreferrer">
                     <GitHubIcon sx={{color: "#fff"}} fontSize="large"/>
