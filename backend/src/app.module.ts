@@ -4,6 +4,6 @@ import { CompetitorsModule } from './competitors/competitors.module';
 import { PlayersModule } from './players/players.module';
 
 @Module({
-  imports: [CompetitionsModule, CompetitorsModule, PlayersModule]
+  imports: [CompetitionsModule, CompetitorsModule, PlayersModule],
 })
 export class AppModule {}
