@@ -14,7 +14,7 @@ interface State {
     };
 }
 //TODO
-//Add error
+//Add error and wait before fetch 3x3
 export default class TopPlayers extends React.Component<{}, State> {
     constructor(props: any) {
         super(props);
