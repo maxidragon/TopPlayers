@@ -1,24 +1,25 @@
-import {Controller, Get, Param} from '@nestjs/common';
-import {CompetitionsService} from "./competitions.service";
+import { Controller, Get, Param } from '@nestjs/common';
+import { CompetitionsService } from './competitions.service';
 
 @Controller('competitions')
 export class CompetitionsController {
-    constructor(private readonly competitionsService: CompetitionsService) {
-    }
+  constructor(private readonly competitionsService: CompetitionsService) {}
 
-    @Get('/id')
-    async getCompetitionsId(@Param('start') start: string, @Param('end') end: string) {
-        return await this.competitionsService.getCompetitionsId(start, end);
-    }
+  @Get('/id')
+  async getCompetitionsId(
+    @Param('start') start: string,
+    @Param('end') end: string,
+  ) {
+    return await this.competitionsService.getCompetitionsId(start, end);
+  }
 
-    @Get(':id/')
-    async getCompetitionsInfo(@Param('id') id: string) {
-        return await this.competitionsService.getCompetitionInfo(id);
-    }
+  @Get(':id/')
+  async getCompetitionsInfo(@Param('id') id: string) {
+    return await this.competitionsService.getCompetitionInfo(id);
+  }
 
-    @Get(':id/competitors/')
-    async getCompetitorsId(@Param('id') id: string) {
-        return await this.competitionsService.getCompetitorsId(id);
-    }
-
+  @Get(':id/competitors/')
+  async getCompetitorsId(@Param('id') id: string) {
+    return await this.competitionsService.getCompetitorsId(id);
+  }
 }
