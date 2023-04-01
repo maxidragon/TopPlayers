@@ -13,8 +13,9 @@ interface State {
         icon: string;
     };
 }
+
 //TODO
-//Add error and wait before fetch 3x3
+//Wait before fetch 3x3
 export default class TopPlayers extends React.Component<{}, State> {
     constructor(props: any) {
         super(props);
@@ -25,22 +26,28 @@ export default class TopPlayers extends React.Component<{}, State> {
         }
         this.handleEventChange = this.handleEventChange.bind(this);
     }
+
     componentDidMount() {
         this.getTopPlayers();
     }
 
     async getTopPlayers() {
         this.setState({isLoading: true});
-        console.log("in progress");
-        const response = await fetch(`http://localhost:5000/players/this/${this.state.event.id}`);
-        const data = await response.json();
-        this.setState({players: data, isLoading: false});
+        try {
+            const response = await fetch(`http://localhost:5000/players/this/${this.state.event.id}`);
+            const data = await response.json();
+            this.setState({players: data, isLoading: false});
+        } catch (e) {
+            this.setState({isLoading: false});
+        }
     }
+
     async handleEventChange(selectedEvent: any) {
         console.log(selectedEvent);
         this.setState({event: selectedEvent});
         await this.getTopPlayers();
     }
+
     render() {
         return (
             <div style={{textAlign: 'center'}}>
@@ -52,7 +59,9 @@ export default class TopPlayers extends React.Component<{}, State> {
                     <Paper>
                         {this.state.isLoading ? <div><Box sx={{textAlign: 'center'}}>
                             <CircularProgress/>
-                        </Box></div> : <PlayersTable players={this.state.players}/>}
+                        </Box></div> :
+                            this.state.players.length === 0 ? <div>There are no top players for this event</div> :
+                            <PlayersTable players={this.state.players}/>}
                     </Paper>
                 </div>
             </div>

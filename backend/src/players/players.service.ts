@@ -1,23 +1,14 @@
-import {Injectable} from '@nestjs/common';
+import { Injectable, CacheInterceptor } from '@nestjs/common';
 import {CompetitionsService} from '../competitions/competitions.service';
 import {CompetitorsService} from '../competitors/competitors.service';
-// import * as cacheManager from 'cache-manager';
-// import { RedisCacheFactory } from 'cache-manager-redis-store';
 
 @Injectable()
 export class PlayersService {
-    //private cache: cacheManager.Cache;
 
     constructor(
         private readonly competitionsService: CompetitionsService,
         private readonly competitorsService: CompetitorsService,
     ) {
-        // const redisCacheFactory = new RedisCacheFactory({
-        //   host: 'localhost',
-        //   port: 6379,
-        //   ttl: 60 * 60 * 24,
-        // });
-        // this.cache = redisCacheFactory.create();
     }
 
     async getThisWeekendTopPlayers(cube: string): Promise<any[]> {
@@ -85,7 +76,6 @@ export class PlayersService {
                 }
             }),
         );
-
         return topPlayers.flat();
     }
 }
