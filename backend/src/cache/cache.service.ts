@@ -9,7 +9,7 @@ export class CacheService {
         (async () => {
             this.memoryCache = await caching('memory', {
                 max: 100,
-                ttl: 8640000 // 24 hours in milliseconds
+                ttl: 86400000 // 24 hours in milliseconds
             });
         })();
     }
