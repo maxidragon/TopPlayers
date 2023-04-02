@@ -14,8 +14,6 @@ interface State {
     };
 }
 
-//TODO
-//Wait before fetch 3x3
 export default class TopPlayers extends React.Component<{}, State> {
     constructor(props: any) {
         super(props);

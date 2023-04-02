@@ -1,4 +1,4 @@
-import { Injectable, CacheInterceptor } from '@nestjs/common';
+import {Injectable, CacheInterceptor} from '@nestjs/common';
 import {CompetitionsService} from '../competitions/competitions.service';
 import {CompetitorsService} from '../competitors/competitors.service';
 
@@ -12,14 +12,29 @@ export class PlayersService {
     }
 
     async getThisWeekendTopPlayers(cube: string): Promise<any[]> {
-        //TODO
-        //Check is today is friday
-        const weekDay = new Date().getDay();
-        const daysToFriday = (5 - weekDay + 7) % 7;
-        const nextFriday = new Date();
-        nextFriday.setDate(nextFriday.getDate() + daysToFriday);
-        const nextSunday = new Date(nextFriday.getTime());
-        nextSunday.setDate(nextSunday.getDate() + 2);
+        const today = new Date().getDay();
+        let nextFriday, nextSunday;
+
+        switch (today) {
+            case 0:
+                nextFriday = new Date();
+                nextFriday.setDate(nextFriday.getDate() - 2);
+                nextSunday = new Date();
+                break;
+            case 6:
+                nextFriday = new Date();
+                nextFriday.setDate(nextFriday.getDate() - 1);
+                nextSunday = new Date();
+                nextSunday.setDate(nextSunday.getDate() + 1);
+                break;
+            default:
+                const daysToFriday = (5 - today + 7) % 7;
+                nextFriday = new Date();
+                nextFriday.setDate(nextFriday.getDate() + daysToFriday);
+                nextSunday = new Date(nextFriday.getTime());
+                nextSunday.setDate(nextSunday.getDate() + 2);
+                break;
+        }
 
         const start = `${nextFriday.getFullYear()}-${(nextFriday.getMonth() + 1)
             .toString()
