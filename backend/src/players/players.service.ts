@@ -42,7 +42,6 @@ export class PlayersService {
         const end = `${nextSunday.getFullYear()}-${(nextSunday.getMonth() + 1)
             .toString()
             .padStart(2, '0')}-${nextSunday.getDate().toString().padStart(2, '0')}`;
-
         const competitions = await this.competitionsService.getCompetitionsId(
             start,
             end
