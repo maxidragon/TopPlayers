@@ -3,14 +3,13 @@ import {Link, Table, TableBody, TableCell, TableHead, TableRow} from "@mui/mater
 
 
 const PlayersTable = (props: any) => {
-    const players = props.players;
     return (
         props.players.length === 0 ?
             <div>There are no players for this event</div>
             :
-            <div className="ranking-table-container">
+            <div>
                 <Table>
-                    <TableHead className="ranking-table-head">
+                    <TableHead>
                         <TableRow>
                             <TableCell>Name</TableCell>
                             <TableCell>Competition</TableCell>

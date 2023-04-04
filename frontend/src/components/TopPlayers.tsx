@@ -26,13 +26,13 @@ export default class TopPlayers extends React.Component<{}, State> {
     }
 
     componentDidMount() {
-        this.getTopPlayers();
+        this.getTopPlayers(this.state.event.id);
     }
 
-    async getTopPlayers() {
+    async getTopPlayers(eventId : string) {
         this.setState({isLoading: true});
         try {
-            const response = await fetch(`http://localhost:5000/players/this/${this.state.event.id}`);
+            const response = await fetch(`http://localhost:5000/players/this/${eventId}`);
             const data = await response.json();
             this.setState({players: data, isLoading: false});
         } catch (e) {
@@ -41,9 +41,8 @@ export default class TopPlayers extends React.Component<{}, State> {
     }
 
     async handleEventChange(selectedEvent: any) {
-        console.log(selectedEvent);
         this.setState({event: selectedEvent});
-        await this.getTopPlayers();
+        await this.getTopPlayers(selectedEvent.id);
     }
 
     render() {
