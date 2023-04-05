@@ -3,13 +3,14 @@ import axios from '../axios';
 
 @Injectable()
 export class CompetitionsService {
-    async getCompetitionsId(start: string, end: string) {
+    async getCompetitionsId(start: string, end: string, country?: string) {
         try {
             const response = await axios.get('competitions', {
                 params: {
                     start,
                     end,
                     per_page: 100,
+                    country_iso2: country,
                 },
             });
             const competitions = [];

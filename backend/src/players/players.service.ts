@@ -11,10 +11,10 @@ export class PlayersService {
     ) {
     }
 
-    async getThisWeekendTopPlayers(cube: string): Promise<any[]> {
+    async getThisWeekendTopPlayers(cube: string, country?: string): Promise<any[]> {
         const today = new Date().getDay();
         let nextFriday, nextSunday;
-
+        console.log(country);
         switch (today) {
             case 0:
                 nextFriday = new Date();
@@ -42,53 +42,71 @@ export class PlayersService {
         const end = `${nextSunday.getFullYear()}-${(nextSunday.getMonth() + 1)
             .toString()
             .padStart(2, '0')}-${nextSunday.getDate().toString().padStart(2, '0')}`;
-        const competitions = await this.competitionsService.getCompetitionsId(
-            start,
-            end
-        );
+        let competitions = [];
+        if (country) {
+            competitions = await this.competitionsService.getCompetitionsId(
+                start,
+                end,
+                country,
+            );
+        } else {
+            competitions = await this.competitionsService.getCompetitionsId(
+                start,
+                end
+            );
+        }
         const topPlayers = [];
         await Promise.all(
             competitions.map(async (competition: any) => {
-                const competitionInfo =
-                    await this.competitionsService.getCompetitionInfo(competition);
-                if (competitionInfo.event_ids.includes(cube)) {
-                    const competitors = await this.competitionsService.getCompetitorsId(
-                        competition,
-                    );
-                    const competitionTopPlayers = [];
-                    await Promise.all(
-                        competitors.map(async (competitor) => {
-                            const personalRecords =
-                                await this.competitorsService.getPersonalRecordsForEvent(
-                                    competitor,
-                                    cube,
-                                );
-                            if (
-                                personalRecords &&
-                                personalRecords.hasOwnProperty('average')
-                            ) {
-                                if (personalRecords.average.world_rank <= 25) {
-                                    competitionTopPlayers.push(competitor);
+                    const competitionInfo =
+                        await this.competitionsService.getCompetitionInfo(competition);
+                    if (competitionInfo.event_ids.includes(cube)) {
+                        const competitors = await this.competitionsService.getCompetitorsId(
+                            competition,
+                        );
+                        const competitionTopPlayers = [];
+                        await Promise.all(
+                            competitors.map(async (competitor) => {
+                                    const personalRecords =
+                                        await this.competitorsService.getPersonalRecordsForEvent(
+                                            competitor,
+                                            cube,
+                                        );
+                                    if (
+                                        personalRecords &&
+                                        personalRecords.hasOwnProperty('average')
+                                    ) {
+                                        if (country) {
+                                            if (personalRecords.average.country_rank <= 25) {
+                                                competitionTopPlayers.push(competitor);
+                                            }
+                                        } else {
+                                            if (personalRecords.average.world_rank <= 25) {
+                                                competitionTopPlayers.push(competitor);
+                                            }
+                                        }
+                                    }
                                 }
-                            }
-                        }),
-                    );
-                    return Promise.all(
-                        competitionTopPlayers.map(async (topPlayer) => {
-                            const profile =
-                                await this.competitorsService.getCompetitorProfile(topPlayer);
-                            const finalTopPlayer = {
-                                name: profile.person.name,
-                                id: topPlayer,
-                                profile: `https://www.worldcubeassociation.org/persons/${topPlayer}`,
-                                competition: competitionInfo.name,
-                                compWebsite: competitionInfo.url,
-                            };
-                            topPlayers.push(finalTopPlayer);
-                        }),
-                    );
+                            ),
+                        )
+                        ;
+                        return Promise.all(
+                            competitionTopPlayers.map(async (topPlayer) => {
+                                const profile =
+                                    await this.competitorsService.getCompetitorProfile(topPlayer);
+                                const finalTopPlayer = {
+                                    name: profile.person.name,
+                                    id: topPlayer,
+                                    profile: `https://www.worldcubeassociation.org/persons/${topPlayer}`,
+                                    competition: competitionInfo.name,
+                                    compWebsite: competitionInfo.url,
+                                };
+                                topPlayers.push(finalTopPlayer);
+                            }),
+                        );
+                    }
                 }
-            }),
+            ),
         );
         return topPlayers.flat();
     }
