@@ -66,18 +66,20 @@ export class PlayersService {
                         const competitionTopPlayers = [];
                         await Promise.all(
                             competitors.map(async (competitor) => {
-                                    const personalRecords =
+                                    const profile =
                                         await this.competitorsService.getPersonalRecordsForEvent(
                                             competitor,
                                             cube,
                                         );
+                                    const personalRecords = profile.personal_records;
                                     if (
-                                        personalRecords &&
-                                        personalRecords.hasOwnProperty('average')
+                                        personalRecords && personalRecords.hasOwnProperty('average')
                                     ) {
                                         if (country) {
                                             if (personalRecords.average.country_rank <= 25) {
-                                                competitionTopPlayers.push(competitor);
+                                                if (profile.country === country) {
+                                                    competitionTopPlayers.push(competitor);
+                                                }
                                             }
                                         } else {
                                             if (personalRecords.average.world_rank <= 25) {
