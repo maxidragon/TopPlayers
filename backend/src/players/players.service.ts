@@ -14,7 +14,6 @@ export class PlayersService {
     async getThisWeekendTopPlayers(cube: string, country?: string): Promise<any[]> {
         const today = new Date().getDay();
         let nextFriday, nextSunday;
-        console.log(country);
         switch (today) {
             case 0:
                 nextFriday = new Date();
@@ -88,8 +87,7 @@ export class PlayersService {
                                     }
                                 }
                             ),
-                        )
-                        ;
+                        );
                         return Promise.all(
                             competitionTopPlayers.map(async (topPlayer) => {
                                 const profile =
