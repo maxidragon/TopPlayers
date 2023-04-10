@@ -66,11 +66,16 @@ export class PlayersService {
                         const competitionTopPlayers = [];
                         await Promise.all(
                             competitors.map(async (competitor) => {
-                                    const profile =
-                                        await this.competitorsService.getPersonalRecordsForEvent(
-                                            competitor,
-                                            cube,
-                                        );
+                                    let attempts = 0;
+                                    let profile = null;
+                                    do {
+                                        try {
+                                            profile = await this.competitorsService.getPersonalRecordsForEvent(competitor, cube);
+                                        } catch (error) {
+                                            attempts++;
+                                            console.log(`Attempt ${attempts} to get personal records for competitor ${competitor} and cube ${cube} failed with error: ${error}`);
+                                        }
+                                    } while (!profile);
                                     if (
                                         profile
                                     ) {
@@ -94,8 +99,16 @@ export class PlayersService {
                         );
                         return Promise.all(
                             competitionTopPlayers.map(async (topPlayer) => {
-                                const profile =
-                                    await this.competitorsService.getCompetitorProfile(topPlayer);
+                                let attempts = 0;
+                                let profile = null;
+                                do {
+                                    try {
+                                        profile = await this.competitorsService.getCompetitorProfile(topPlayer);
+                                    } catch (error) {
+                                        attempts++;
+                                        console.log(`Attempt ${attempts} to get personal records for competitor ${topPlayer} and cube ${cube} failed with error: ${error}`);
+                                    }
+                                } while (!profile);
                                 const finalTopPlayer = {
                                     name: profile.person.name,
                                     id: topPlayer,
