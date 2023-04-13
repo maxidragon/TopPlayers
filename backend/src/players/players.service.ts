@@ -111,6 +111,9 @@ export class PlayersService {
                                 } while (!profile);
                                 const finalTopPlayer = {
                                     name: profile.person.name,
+                                    worldRank: profile.personal_records[cube].average.world_rank,
+                                    countryRank: profile.personal_records[cube].average.country_rank,
+                                    country: profile.person.country.name,
                                     id: topPlayer,
                                     profile: `https://www.worldcubeassociation.org/persons/${topPlayer}`,
                                     competition: competitionInfo.name,

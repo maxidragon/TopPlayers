@@ -1,7 +1,6 @@
 import {Link, Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
 
 
-
 const PlayersTable = (props: any) => {
     return (
         props.players.length === 0 ?
@@ -12,7 +11,11 @@ const PlayersTable = (props: any) => {
                     <TableHead>
                         <TableRow>
                             <TableCell>Name</TableCell>
+                            <TableCell>Country</TableCell>
                             <TableCell>Competition</TableCell>
+                            {props.region.code === "WR" ?
+                                <TableCell>WR</TableCell>
+                                : <TableCell>NR</TableCell>}
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -24,10 +27,16 @@ const PlayersTable = (props: any) => {
                                     </Link>
                                 </TableCell>
                                 <TableCell>
+                                    {player.country}
+                                </TableCell>
+                                <TableCell>
                                     <Link href={player.compWebsite} underline="none" target="_blank">
                                         {player.competition}
                                     </Link>
                                 </TableCell>
+                                {props.region.code === "WR" ?
+                                    <TableCell>{player.worldRank}</TableCell>
+                                    : <TableCell>{player.countryRank}</TableCell>}
                             </TableRow>
                         ))}
                     </TableBody>

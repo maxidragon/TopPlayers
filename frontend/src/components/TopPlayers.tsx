@@ -115,7 +115,7 @@ export default class TopPlayers extends React.Component<{}, State> {
                                 <CircularProgress/>
                             </Box></div> :
                             this.state.players.length === 0 ? <div>There are no top players for this event</div> :
-                                <PlayersTable players={this.state.players}/>}
+                                <PlayersTable players={this.state.players} region={this.state.region}/>}
                     </Paper>
                 </div>
             </div>
