@@ -39,7 +39,7 @@ export class CompetitionsService {
             );
             const competitors = [];
             response.data.persons.map((competitor: any) => {
-                if (competitor.wcaId) {
+                if (competitor.wcaId && competitor.registration && competitor.registration.eventIds && competitor.registration.hasOwnProperty('eventIds')) {
                     competitors.push(
                         {
                             id: competitor.wcaId,
