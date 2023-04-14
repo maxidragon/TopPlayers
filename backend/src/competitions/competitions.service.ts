@@ -40,7 +40,12 @@ export class CompetitionsService {
             const competitors = [];
             response.data.persons.map((competitor: any) => {
                 if (competitor.wcaId) {
-                    competitors.push(competitor.wcaId);
+                    competitors.push(
+                        {
+                            id: competitor.wcaId,
+                            events: competitor.registration.eventIds
+                        }
+                    );
                 }
             });
             return competitors;
