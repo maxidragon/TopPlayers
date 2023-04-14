@@ -68,30 +68,28 @@ export class PlayersService {
                             competitors.map(async (competitor) => {
                                     let attempts = 0;
                                     let profile = null;
-                                    if (competitor.events.includes(cube)) {
-                                        do {
-                                            try {
-                                                profile = await this.competitorsService.getPersonalRecordsForEvent(competitor.id, cube);
-                                            } catch (error) {
-                                                attempts++;
-                                                console.log(`Attempt ${attempts} to get personal records for competitor ${competitor.id} and cube ${cube} failed with error: ${error}`);
-                                            }
-                                        } while (!profile);
-                                        if (
-                                            profile
-                                        ) {
-                                            const personalRecords = profile.personal_records;
-                                            if (personalRecords && personalRecords.hasOwnProperty('average')) {
-                                                if (country) {
-                                                    if (personalRecords.average.country_rank <= 15) {
-                                                        if (profile.country === country) {
-                                                            competitionTopPlayers.push(competitor.id);
-                                                        }
+                                    do {
+                                        try {
+                                            profile = await this.competitorsService.getPersonalRecordsForEvent(competitor, cube);
+                                        } catch (error) {
+                                            attempts++;
+                                            console.log(`Attempt ${attempts} to get personal records for competitor ${competitor} and cube ${cube} failed with error: ${error}`);
+                                        }
+                                    } while (!profile);
+                                    if (
+                                        profile
+                                    ) {
+                                        const personalRecords = profile.personal_records;
+                                        if (personalRecords && personalRecords.hasOwnProperty('average')) {
+                                            if (country) {
+                                                if (personalRecords.average.country_rank <= 25) {
+                                                    if (profile.country === country) {
+                                                        competitionTopPlayers.push(competitor);
                                                     }
-                                                } else {
-                                                    if (personalRecords.average.world_rank <= 25) {
-                                                        competitionTopPlayers.push(competitor.id);
-                                                    }
+                                                }
+                                            } else {
+                                                if (personalRecords.average.world_rank <= 25) {
+                                                    competitionTopPlayers.push(competitor);
                                                 }
                                             }
                                         }
