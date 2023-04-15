@@ -14,7 +14,7 @@ export class CompetitionsController {
   }
 
   @Get(':id/')
-  async getCompetitionsInfo(@Param('id') id: string) {
+  async getCompetitionInfo(@Param('id') id: string) {
     return await this.competitionsService.getCompetitionInfo(id);
   }
 

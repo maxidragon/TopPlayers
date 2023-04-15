@@ -25,7 +25,7 @@ export class CompetitionsService {
 
     async getCompetitionInfo(id: string) {
         try {
-            const response = await axios.get('competitions/' + id);
+            const response = await axios.get('competitions/' + id + '/wcif/public');
             return response.data;
         } catch (error) {
             console.error(error);
