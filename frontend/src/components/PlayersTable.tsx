@@ -1,5 +1,5 @@
 import {Link, Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
-
+import regions from "../regions";
 
 const PlayersTable = (props: any) => {
     return (
@@ -16,6 +16,7 @@ const PlayersTable = (props: any) => {
                             {props.region.code === "WR" ?
                                 <TableCell>WR</TableCell>
                                 : <TableCell>NR</TableCell>}
+                            <TableCell>Rounds</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -37,6 +38,7 @@ const PlayersTable = (props: any) => {
                                 {props.region.code === "WR" ?
                                     <TableCell>{player.worldRank}</TableCell>
                                     : <TableCell>{player.countryRank}</TableCell>}
+                                <TableCell>{player.rounds}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

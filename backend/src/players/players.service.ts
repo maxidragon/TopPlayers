@@ -1,6 +1,7 @@
 import {Injectable, CacheInterceptor} from '@nestjs/common';
 import {CompetitionsService} from '../competitions/competitions.service';
 import {CompetitorsService} from '../competitors/competitors.service';
+import regions from '../regions';
 
 @Injectable()
 export class PlayersService {
@@ -41,56 +42,86 @@ export class PlayersService {
         const end = `${nextSunday.getFullYear()}-${(nextSunday.getMonth() + 1)
             .toString()
             .padStart(2, '0')}-${nextSunday.getDate().toString().padStart(2, '0')}`;
-        let competitions = [];
-        if (country) {
-            competitions = await this.competitionsService.getCompetitionsId(
-                start,
-                end,
-                country,
-            );
-        } else {
-            competitions = await this.competitionsService.getCompetitionsId(
-                start,
-                end
-            );
-        }
+        const competitions = await this.competitionsService.getCompetitionsId(
+            start,
+            end,
+        );
         const topPlayers = [];
         await Promise.all(
             competitions.map(async (competition: any) => {
                     const competitionInfo =
                         await this.competitionsService.getCompetitionInfo(competition);
-                    if (competitionInfo.event_ids.includes(cube)) {
-                        const competitors = await this.competitionsService.getCompetitorsId(
-                            competition,
-                        );
+                    let compEvent = null;
+                    competitionInfo.events.map((event: any) => {
+                        if (event.id === cube) {
+                            compEvent = event;
+                        }
+                    });
+                    if (compEvent && competitionInfo.persons) {
+                        const competitors = competitionInfo.persons;
                         const competitionTopPlayers = [];
                         await Promise.all(
                             competitors.map(async (competitor) => {
-                                    let attempts = 0;
-                                    let profile = null;
-                                    if (competitor.events.includes(cube)) {
-                                        do {
-                                            try {
-                                                profile = await this.competitorsService.getPersonalRecordsForEvent(competitor.id, cube);
-                                            } catch (error) {
-                                                attempts++;
-                                                console.log(`Attempt ${attempts} to get personal records for competitor ${competitor.id} and cube ${cube} failed with error: ${error}`);
-                                            }
-                                        } while (!profile);
+                                    if (competitor.registration && competitor.registration.eventIds) {
                                         if (
-                                            profile
+                                            competitor.registration.eventIds.includes(cube)
                                         ) {
-                                            const personalRecords = profile.personal_records;
-                                            if (personalRecords && personalRecords.hasOwnProperty('average')) {
+                                            const personalRecords = competitor.personalBests;
+                                            let checkedResult = null;
+                                            personalRecords.map((record) => {
+                                                if (record.eventId == cube) {
+                                                    const bldEvents = ["333bf", "444bf", "555bf", "333mbf"];
+                                                    if (bldEvents.includes(cube)) {
+                                                        if (record.type === "single") {
+                                                            checkedResult = record;
+                                                        }
+                                                    } else {
+                                                        if (record.type === "average") {
+                                                            checkedResult = record;
+                                                        }
+                                                    }
+                                                }
+                                            });
+                                            if (checkedResult) {
+                                                let playerCountry = '';
+                                                regions.map((region) => {
+                                                    if (region.code === competitor.countryIso2) {
+                                                        playerCountry = region.name;
+                                                    }
+                                                });
                                                 if (country) {
-                                                    if (personalRecords.average.country_rank <= 15) {
-                                                        if (profile.country === country) {
-                                                            competitionTopPlayers.push(competitor.id);
+                                                    if (checkedResult.nationalRanking <= 15) {
+                                                        if (competitor.countryIso2 === country) {
+                                                            competitionTopPlayers.push(
+                                                                {
+                                                                    name: competitor.name,
+                                                                    worldRank: checkedResult.worldRanking,
+                                                                    countryRank: checkedResult.nationalRanking,
+                                                                    country: playerCountry,
+                                                                    id: competitor.wcaId,
+                                                                    profile: `https://www.worldcubeassociation.org/persons/${competitor.wcaId}`,
+                                                                    competition: competitionInfo.name,
+                                                                    compWebsite: `https://worldcubeassociation.org/competitions/${competitionInfo.id}`,
+                                                                    rounds: compEvent.rounds.length
+                                                                }
+                                                            );
                                                         }
                                                     }
                                                 } else {
-                                                    if (personalRecords.average.world_rank <= 25) {
-                                                        competitionTopPlayers.push(competitor.id);
+                                                    if (checkedResult.worldRanking <= 25) {
+                                                        competitionTopPlayers.push(
+                                                            {
+                                                                name: competitor.name,
+                                                                worldRank: checkedResult.worldRanking,
+                                                                countryRank: checkedResult.nationalRanking,
+                                                                country: playerCountry,
+                                                                id: competitor.wcaId,
+                                                                profile: `https://www.worldcubeassociation.org/persons/${competitor.wcaId}`,
+                                                                competition: competitionInfo.name,
+                                                                compWebsite: `https://worldcubeassociation.org/competitions/${competitionInfo.id}`,
+                                                                rounds: compEvent.rounds.length
+                                                            }
+                                                        );
                                                     }
                                                 }
                                             }
@@ -101,33 +132,18 @@ export class PlayersService {
                         );
                         return Promise.all(
                             competitionTopPlayers.map(async (topPlayer) => {
-                                let attempts = 0;
-                                let profile = null;
-                                do {
-                                    try {
-                                        profile = await this.competitorsService.getCompetitorProfile(topPlayer);
-                                    } catch (error) {
-                                        attempts++;
-                                        console.log(`Attempt ${attempts} to get personal records for competitor ${topPlayer} and cube ${cube} failed with error: ${error}`);
-                                    }
-                                } while (!profile);
-                                const finalTopPlayer = {
-                                    name: profile.person.name,
-                                    worldRank: profile.personal_records[cube].average.world_rank,
-                                    countryRank: profile.personal_records[cube].average.country_rank,
-                                    country: profile.person.country.name,
-                                    id: topPlayer,
-                                    profile: `https://www.worldcubeassociation.org/persons/${topPlayer}`,
-                                    competition: competitionInfo.name,
-                                    compWebsite: competitionInfo.url,
-                                };
-                                topPlayers.push(finalTopPlayer);
+                                topPlayers.push(topPlayer);
                             }),
                         );
                     }
                 }
             ),
         );
+        if (country) {
+            topPlayers.sort((a, b) => a.countryRank - b.countryRank);
+        } else {
+            topPlayers.sort((a, b) => a.worldRank - b.worldRank);
+        }
         return topPlayers.flat();
     }
 }
