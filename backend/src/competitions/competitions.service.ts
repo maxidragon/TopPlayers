@@ -15,7 +15,13 @@ export class CompetitionsService {
             });
             const competitions = [];
             response.data.map((competition: any) => {
-                competitions.push(competition.id);
+                competitions.push(
+                    {
+                        id: competition.id,
+                        startDate: competition.start_date,
+                        endDate: competition.end_date,
+                    }
+                );
             });
             return competitions;
         } catch (error) {

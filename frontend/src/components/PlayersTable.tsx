@@ -54,6 +54,7 @@ const PlayersTable = (props: any) => {
                             }
                             <TableCell>PR</TableCell>
                             <TableCell>Rounds</TableCell>
+                            <TableCell>Competition days</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -80,6 +81,7 @@ const PlayersTable = (props: any) => {
                                 }
                                 <TableCell>{resultToString(player.prResult, props.event, player.format)}</TableCell>
                                 <TableCell>{player.rounds}</TableCell>
+                                <TableCell>{player.compDays}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

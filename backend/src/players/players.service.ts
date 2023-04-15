@@ -50,8 +50,24 @@ export class PlayersService {
         await Promise.all(
             competitions.map(async (competition: any) => {
                     const competitionInfo =
-                        await this.competitionsService.getCompetitionInfo(competition);
+                        await this.competitionsService.getCompetitionInfo(competition.id);
                     let compEvent = null;
+                    const weekday = ["None", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+                    const startDate = new Date(competition.startDate);
+                    const endDate = new Date(competition.endDate);
+                    let startDay = startDate.getDay();
+                    let endDay = endDate.getDay();
+                    let compDaysArray = [];
+                    if (startDay == 0) {
+                        startDay = 7;
+                    }
+                    if (endDay == 0) {
+                        endDay = 7;
+                    }
+                    for (let i = startDay; i <= endDay; i++) {
+                        compDaysArray.push(weekday[i]);
+                    }
+                    const compDays = compDaysArray.join(', ');
                     competitionInfo.events.map((event: any) => {
                         if (event.id === cube) {
                             compEvent = event;
@@ -96,18 +112,19 @@ export class PlayersService {
                                                         if (competitor.countryIso2 === country) {
                                                             competitionTopPlayers.push(
                                                                 {
-                                                                name: competitor.name,
-                                                                worldRank: checkedResult.worldRanking,
-                                                                countryRank: checkedResult.nationalRanking,
-                                                                continentRank: checkedResult.continentalRanking,
-                                                                prResult: checkedResult.best,
-                                                                format: checkedResult.type,
-                                                                country: playerCountry,
-                                                                id: competitor.wcaId,
-                                                                profile: `https://www.worldcubeassociation.org/persons/${competitor.wcaId}`,
-                                                                competition: competitionInfo.name,
-                                                                compWebsite: `https://worldcubeassociation.org/competitions/${competitionInfo.id}`,
-                                                                rounds: compEvent.rounds.length
+                                                                    name: competitor.name,
+                                                                    worldRank: checkedResult.worldRanking,
+                                                                    countryRank: checkedResult.nationalRanking,
+                                                                    continentRank: checkedResult.continentalRanking,
+                                                                    prResult: checkedResult.best,
+                                                                    format: checkedResult.type,
+                                                                    country: playerCountry,
+                                                                    id: competitor.wcaId,
+                                                                    profile: `https://www.worldcubeassociation.org/persons/${competitor.wcaId}`,
+                                                                    competition: competitionInfo.name,
+                                                                    compWebsite: `https://worldcubeassociation.org/competitions/${competitionInfo.id}`,
+                                                                    rounds: compEvent.rounds.length,
+                                                                    compDays: compDays
                                                                 }
                                                             );
                                                         }
@@ -117,18 +134,19 @@ export class PlayersService {
                                                         if (playerContinent === continent) {
                                                             competitionTopPlayers.push(
                                                                 {
-                                                                name: competitor.name,
-                                                                worldRank: checkedResult.worldRanking,
-                                                                countryRank: checkedResult.nationalRanking,
-                                                                continentRank: checkedResult.continentalRanking,
-                                                                prResult: checkedResult.best,
-                                                                format: checkedResult.type,
-                                                                country: playerCountry,
-                                                                id: competitor.wcaId,
-                                                                profile: `https://www.worldcubeassociation.org/persons/${competitor.wcaId}`,
-                                                                competition: competitionInfo.name,
-                                                                compWebsite: `https://worldcubeassociation.org/competitions/${competitionInfo.id}`,
-                                                                rounds: compEvent.rounds.length
+                                                                    name: competitor.name,
+                                                                    worldRank: checkedResult.worldRanking,
+                                                                    countryRank: checkedResult.nationalRanking,
+                                                                    continentRank: checkedResult.continentalRanking,
+                                                                    prResult: checkedResult.best,
+                                                                    format: checkedResult.type,
+                                                                    country: playerCountry,
+                                                                    id: competitor.wcaId,
+                                                                    profile: `https://www.worldcubeassociation.org/persons/${competitor.wcaId}`,
+                                                                    competition: competitionInfo.name,
+                                                                    compWebsite: `https://worldcubeassociation.org/competitions/${competitionInfo.id}`,
+                                                                    rounds: compEvent.rounds.length,
+                                                                    compDays: compDays
                                                                 }
                                                             );
                                                         }
@@ -148,7 +166,8 @@ export class PlayersService {
                                                                 profile: `https://www.worldcubeassociation.org/persons/${competitor.wcaId}`,
                                                                 competition: competitionInfo.name,
                                                                 compWebsite: `https://worldcubeassociation.org/competitions/${competitionInfo.id}`,
-                                                                rounds: compEvent.rounds.length
+                                                                rounds: compEvent.rounds.length,
+                                                                compDays: compDays
                                                             }
                                                         );
                                                     }
