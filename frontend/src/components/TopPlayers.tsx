@@ -30,10 +30,12 @@ export default class TopPlayers extends React.Component<{}, State> {
             event: events[0],
             isLoading: true,
             region: {
-                "code": "WR",
-                "name": "World"
+                "id": "WR",
+                "name": "World",
+                "continentId": "_Multiple Continents",
+                "iso2": "WR",
             },
-    }
+        }
         this.handleEventChange = this.handleEventChange.bind(this);
         this.handleRegionChange = this.handleRegionChange.bind(this);
     }
@@ -42,17 +44,18 @@ export default class TopPlayers extends React.Component<{}, State> {
         this.getTopPlayers(this.state.event.id);
     }
 
-    async getTopPlayers(eventId: string, regionId: string = "WR") {
+    async getTopPlayers(eventId: string, regionId: string = "WR", continentId?: string) {
         this.setState({isLoading: true});
         try {
             let response;
-            switch (regionId) {
-                case "WR":
-                    response = await fetch(`http://localhost:5000/players/this/${eventId}`);
-                    break;
-                default:
+            if (regionId === "WR") {
+                response = await fetch(`http://localhost:5000/players/this/${eventId}`);
+            } else {
+                if (continentId) {
+                    response = await fetch(`http://localhost:5000/players/this/${eventId}/continent/${continentId}`);
+                } else {
                     response = await fetch(`http://localhost:5000/players/this/${eventId}/${regionId}`);
-                    break;
+                }
             }
             const data = await response.json();
             this.setState({players: data, isLoading: false});
@@ -64,16 +67,22 @@ export default class TopPlayers extends React.Component<{}, State> {
 
     async handleEventChange(selectedEvent: any) {
         this.setState({event: selectedEvent});
-        await this.getTopPlayers(selectedEvent.id, this.state.region.code);
+        await this.getTopPlayers(selectedEvent.id, this.state.region.iso2);
     }
 
     async handleRegionChange(event: any) {
         const selectedRegion = regions.find(
-            (country) => country.code === event.target.value
+            (country) => country.iso2 === event.target.value
         );
-        this.setState({region: selectedRegion});
-        // @ts-ignore
-        await this.getTopPlayers(this.state.event.id, selectedRegion.code);
+        if (selectedRegion) {
+            this.setState({region: selectedRegion});
+            if (selectedRegion.continentId === "Continent") {
+                //@ts-ignore
+                await this.getTopPlayers(this.state.event.id, null, selectedRegion.iso2);
+            } else {
+                await this.getTopPlayers(this.state.event.id, selectedRegion.iso2);
+            }
+        }
     }
 
     render() {
@@ -96,12 +105,12 @@ export default class TopPlayers extends React.Component<{}, State> {
                         <Select
                             labelId="regionLabel"
                             id="regionSelect"
-                            value={this.state.region.code}
+                            value={this.state.region.iso2}
                             label="regionLabel"
                             onChange={this.handleRegionChange}
                         >
                             {regions.map((country) => (
-                                <MenuItem key={country.code} value={country.code}>
+                                <MenuItem key={country.iso2} value={country.iso2}>
                                     {country.name}
                                 </MenuItem>
                             ))}
@@ -115,7 +124,7 @@ export default class TopPlayers extends React.Component<{}, State> {
                                 <CircularProgress/>
                             </Box></div> :
                             this.state.players.length === 0 ? <div>There are no top players for this event</div> :
-                                <PlayersTable players={this.state.players} region={this.state.region}/>}
+                                <PlayersTable players={this.state.players} region={this.state.region} event={this.state.event.id}/>}
                     </Paper>
                 </div>
             </div>

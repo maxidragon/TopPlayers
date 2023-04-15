@@ -31,4 +31,16 @@ export class PlayersController {
         await this.cacheService.set(cacheKey, value);
         return value;
     }
+
+    @Get('/this/:cube/continent/:continent')
+    async getWeekendTopPlayersForContinent(@Param('cube') cube: string, @Param('continent') continent: string) {
+        const cacheKey = `players-this-weekend-${cube}-${continent}`;
+        const cachedValue = await this.cacheService.get(cacheKey);
+        if (cachedValue) {
+            return cachedValue;
+        }
+        const value = await this.playersService.getThisWeekendTopPlayers(cube, null, continent);
+        await this.cacheService.set(cacheKey, value);
+        return value;
+    }
 }

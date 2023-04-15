@@ -12,7 +12,7 @@ export class PlayersService {
     ) {
     }
 
-    async getThisWeekendTopPlayers(cube: string, country?: string): Promise<any[]> {
+    async getThisWeekendTopPlayers(cube: string, country?: string, continent?: string): Promise<any[]> {
         const today = new Date().getDay();
         let nextFriday, nextSunday;
         switch (today) {
@@ -84,9 +84,11 @@ export class PlayersService {
                                             });
                                             if (checkedResult) {
                                                 let playerCountry = '';
+                                                let playerContinent = '';
                                                 regions.map((region) => {
-                                                    if (region.code === competitor.countryIso2) {
+                                                    if (region.iso2 === competitor.countryIso2) {
                                                         playerCountry = region.name;
+                                                        playerContinent = region.continentId;
                                                     }
                                                 });
                                                 if (country) {
@@ -97,6 +99,26 @@ export class PlayersService {
                                                                     name: competitor.name,
                                                                     worldRank: checkedResult.worldRanking,
                                                                     countryRank: checkedResult.nationalRanking,
+                                                                    continentRank: checkedResult.continentalRanking,
+                                                                    country: playerCountry,
+                                                                    id: competitor.wcaId,
+                                                                    profile: `https://www.worldcubeassociation.org/persons/${competitor.wcaId}`,
+                                                                    competition: competitionInfo.name,
+                                                                    compWebsite: `https://worldcubeassociation.org/competitions/${competitionInfo.id}`,
+                                                                    rounds: compEvent.rounds.length
+                                                                }
+                                                            );
+                                                        }
+                                                    }
+                                                } else if (continent) {
+                                                    if (checkedResult.continentalRanking <= 25) {
+                                                        if (playerContinent === continent) {
+                                                            competitionTopPlayers.push(
+                                                                {
+                                                                    name: competitor.name,
+                                                                    worldRank: checkedResult.worldRanking,
+                                                                    countryRank: checkedResult.nationalRanking,
+                                                                    continentRank: checkedResult.continentalRanking,
                                                                     country: playerCountry,
                                                                     id: competitor.wcaId,
                                                                     profile: `https://www.worldcubeassociation.org/persons/${competitor.wcaId}`,
@@ -114,6 +136,9 @@ export class PlayersService {
                                                                 name: competitor.name,
                                                                 worldRank: checkedResult.worldRanking,
                                                                 countryRank: checkedResult.nationalRanking,
+                                                                continentRank: checkedResult.continentalRanking,
+                                                                prResult: checkedResult.best,
+                                                                format: checkedResult.type,
                                                                 country: playerCountry,
                                                                 id: competitor.wcaId,
                                                                 profile: `https://www.worldcubeassociation.org/persons/${competitor.wcaId}`,
