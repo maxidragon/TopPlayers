@@ -66,20 +66,12 @@ export class PlayersService {
                     const competitionInfo =
                         await this.competitionsService.getCompetitionInfo(competition.id);
                     let compEvent = null;
-                    const weekday = ["None", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+                    const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
                     const startDate = new Date(competition.startDate);
                     const endDate = new Date(competition.endDate);
-                    let startDay = startDate.getDay();
-                    let endDay = endDate.getDay();
                     let compDaysArray = [];
-                    if (startDay == 0) {
-                        startDay = 7;
-                    }
-                    if (endDay == 0) {
-                        endDay = 7;
-                    }
-                    for (let i = startDay; i <= endDay; i++) {
-                        compDaysArray.push(weekday[i]);
+                    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+                        compDaysArray.push(weekday[d.getDay()]);
                     }
                     const compDays = compDaysArray.join(', ');
                     competitionInfo.events.map((event: any) => {
