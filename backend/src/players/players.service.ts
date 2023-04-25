@@ -14,34 +14,48 @@ export class PlayersService {
 
     async getThisWeekendTopPlayers(cube: string, country?: string, continent?: string): Promise<any[]> {
         const today = new Date().getDay();
-        let nextFriday, nextSunday;
+        let nextFriday, nextMonday;
+
         switch (today) {
             case 0:
                 nextFriday = new Date();
-                nextFriday.setDate(nextFriday.getDate() - 2);
-                nextSunday = new Date();
+                nextFriday.setDate(nextFriday.getDate() - 3);
+                nextMonday = new Date();
+                nextMonday.setDate(nextMonday.getDate() + 1);
+                break;
+            case 1:
+                nextFriday = new Date();
+                nextFriday.setDate(nextFriday.getDate() - 4);
+                nextMonday = new Date();
+                nextMonday.setDate(nextMonday.getDate() + 1);
+                break;
+            case 5:
+                nextFriday = new Date();
+                nextMonday = new Date();
+                nextMonday.setDate(nextMonday.getDate() + 3);
                 break;
             case 6:
                 nextFriday = new Date();
-                nextFriday.setDate(nextFriday.getDate() - 1);
-                nextSunday = new Date();
-                nextSunday.setDate(nextSunday.getDate() + 1);
+                nextFriday.setDate(nextFriday.getDate() - 2);
+                nextMonday = new Date();
+                nextMonday.setDate(nextMonday.getDate() + 2);
                 break;
             default:
                 const daysToFriday = (5 - today + 7) % 7;
                 nextFriday = new Date();
                 nextFriday.setDate(nextFriday.getDate() + daysToFriday);
-                nextSunday = new Date(nextFriday.getTime());
-                nextSunday.setDate(nextSunday.getDate() + 2);
+                nextMonday = new Date(nextFriday.getTime());
+                nextMonday.setDate(nextMonday.getDate() + 3);
                 break;
         }
+
 
         const start = `${nextFriday.getFullYear()}-${(nextFriday.getMonth() + 1)
             .toString()
             .padStart(2, '0')}-${nextFriday.getDate().toString().padStart(2, '0')}`;
-        const end = `${nextSunday.getFullYear()}-${(nextSunday.getMonth() + 1)
+        const end = `${nextMonday.getFullYear()}-${(nextMonday.getMonth() + 1)
             .toString()
-            .padStart(2, '0')}-${nextSunday.getDate().toString().padStart(2, '0')}`;
+            .padStart(2, '0')}-${nextMonday.getDate().toString().padStart(2, '0')}`;
         const competitions = await this.competitionsService.getCompetitionsId(
             start,
             end,
