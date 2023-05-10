@@ -1219,12 +1219,6 @@ const regions = [
         "iso2": "VN"
     },
     {
-        "id": "XS",
-        "name": "Multiple Countries (South America)",
-        "continentId": "_SouthAmerica",
-        "iso2": "XS"
-    },
-    {
         "id": "Yemen",
         "name": "Yemen",
         "continentId": "_Asia",

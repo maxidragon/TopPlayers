@@ -1,8 +1,9 @@
 import React from "react";
 import {
+    Autocomplete,
     Box,
-    CircularProgress, FormControl, InputLabel, MenuItem,
-    Paper, Select,
+    CircularProgress,
+    Paper, TextField,
     Typography
 } from "@mui/material";
 import EventSelect from "./EventSelect";
@@ -70,20 +71,18 @@ export default class TopPlayers extends React.Component<{}, State> {
         await this.getTopPlayers(selectedEvent.id, this.state.region.iso2);
     }
 
-    async handleRegionChange(event: any) {
-        const selectedRegion = regions.find(
-            (country) => country.iso2 === event.target.value
-        );
-        if (selectedRegion) {
-            this.setState({region: selectedRegion});
-            if (selectedRegion.continentId === "Continent") {
+    async handleRegionChange(event: any, newValue: any) {
+        if (newValue) {
+            this.setState({ region: newValue });
+            if (newValue.continentId === "Continent") {
                 //@ts-ignore
-                await this.getTopPlayers(this.state.event.id, null, selectedRegion.iso2);
+                await this.getTopPlayers(this.state.event.id, null, newValue.iso2);
             } else {
-                await this.getTopPlayers(this.state.event.id, selectedRegion.iso2);
+                await this.getTopPlayers(this.state.event.id, newValue.iso2);
             }
         }
     }
+
 
     render() {
         return (
@@ -100,22 +99,16 @@ export default class TopPlayers extends React.Component<{}, State> {
                     alignItems: 'center !important',
                     margin: 'auto',
                 }}>
-                    <FormControl>
-                        <InputLabel id="regionLabel">Region</InputLabel>
-                        <Select
-                            labelId="regionLabel"
-                            id="regionSelect"
-                            value={this.state.region.iso2}
-                            label="regionLabel"
-                            onChange={this.handleRegionChange}
-                        >
-                            {regions.map((country) => (
-                                <MenuItem key={country.iso2} value={country.iso2}>
-                                    {country.name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
+                    <Autocomplete
+                        id="regionSelect"
+                        options={regions}
+                        getOptionLabel={(option) => option.name}
+                        value={this.state.region}
+                        onChange={this.handleRegionChange}
+                        renderInput={(params) => (
+                            <TextField {...params} label="Region" variant="outlined" sx={{width: 180}}/>
+                        )}
+                    />
                 </Box>
                 <EventSelect selectedEvent={this.state.event} eventChange={this.handleEventChange}/>
                 <div>
@@ -124,7 +117,8 @@ export default class TopPlayers extends React.Component<{}, State> {
                                 <CircularProgress/>
                             </Box></div> :
                             this.state.players.length === 0 ? <div>There are no top players for this event</div> :
-                                <PlayersTable players={this.state.players} region={this.state.region} event={this.state.event.id}/>}
+                                <PlayersTable players={this.state.players} region={this.state.region}
+                                              event={this.state.event.id}/>}
                     </Paper>
                 </div>
             </div>
