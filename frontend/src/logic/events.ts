@@ -1,4 +1,10 @@
-const events = [
+import { EventId } from "@wca/helpers";
+
+const events: {
+    id: EventId;
+    name: string;
+    icon: string;
+}[] = [
     {id: '333', name: '3x3x3 Cube', icon: 'event-333'},
     {id: '222', name: '2x2x2 Cube', icon: 'event-222'},
     {id: '444', name: '4x4x4 Cube', icon: 'event-444'},

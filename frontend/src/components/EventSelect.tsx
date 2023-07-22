@@ -1,7 +1,6 @@
 import {IconButton, Tooltip} from "@mui/material";
-import React from "react";
 import "@cubing/icons";
-import events from "../events";
+import events from "../logic/events";
 
 const EventSelect = (props: any) => {
     const {selectedEvent, eventChange} = props;
