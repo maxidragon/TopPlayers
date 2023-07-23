@@ -1,4 +1,3 @@
-import React from "react";
 import {
     Autocomplete,
     Box,
@@ -8,14 +7,17 @@ import {
 } from "@mui/material";
 import EventSelect from "./EventSelect";
 import PlayersTable from "./PlayersTable";
-import events from "../events";
-import regions from "../regions";
+import events from "../logic/events";
+import regions from "../logic/regions";
+import { getThisWeekendTopPlayers } from "../logic/players";
+import { EventId } from "@wca/helpers";
+import { Component } from "react";
 
 interface State {
     isLoading: boolean;
     players: any[];
     event: {
-        id: string;
+        id: EventId;
         name: string;
         icon: string;
     };
@@ -23,7 +25,7 @@ interface State {
 }
 
 
-export default class TopPlayers extends React.Component<{}, State> {
+export default class TopPlayers extends Component<{}, State> {
     constructor(props: any) {
         super(props);
         this.state = {
@@ -45,21 +47,21 @@ export default class TopPlayers extends React.Component<{}, State> {
         this.getTopPlayers(this.state.event.id);
     }
 
-    async getTopPlayers(eventId: string, regionId: string = "WR", continentId?: string) {
+    async getTopPlayers(eventId: EventId, regionId: string = "WR", continentId?: string) {
         this.setState({isLoading: true});
         try {
             let response;
             if (regionId === "WR") {
-                response = await fetch(`http://localhost:5000/players/this/${eventId}`);
+                response = await getThisWeekendTopPlayers(eventId);
             } else {
                 if (continentId) {
-                    response = await fetch(`http://localhost:5000/players/this/${eventId}/continent/${continentId}`);
+                    response = await getThisWeekendTopPlayers(eventId, continentId);
+
                 } else {
-                    response = await fetch(`http://localhost:5000/players/this/${eventId}/${regionId}`);
+                    response = await getThisWeekendTopPlayers(eventId, regionId);
                 }
             }
-            const data = await response.json();
-            this.setState({players: data, isLoading: false});
+            this.setState({players: response, isLoading: false});
 
         } catch (e) {
             this.setState({isLoading: false});
