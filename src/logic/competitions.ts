@@ -8,7 +8,7 @@ export const getCompetitionsFromPeriod = async (start: string, end: string) => {
   });
   const response = await wcaApiFetch(`/competitions?${params}`);
   const competitions: any = [];
-  response.map((competition: any) => {
+  response.forEach((competition: any) => {
     competitions.push({
       id: competition.id,
       name: competition.name,
