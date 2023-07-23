@@ -23,7 +23,7 @@ export const resultToString = (result: any, eventId: string, format: string) => 
     }
 };
 
-export const centisecondsToClockFormat = (centiseconds: any) => {
+export const centisecondsToClockFormat = (centiseconds: number) => {
     //@ts-ignore
     const date = new Date(null);
     date.setMilliseconds(centiseconds * 10);

@@ -12,22 +12,19 @@ import regions from "../logic/regions";
 import { getThisWeekendTopPlayers } from "../logic/players";
 import { EventId } from "@wca/helpers";
 import { Component } from "react";
+import { Event, Region, TopPlayer } from "../logic/interfaces";
 
 interface State {
     isLoading: boolean;
-    players: any[];
-    event: {
-        id: EventId;
-        name: string;
-        icon: string;
-    };
-    region: any;
+    players: TopPlayer[];
+    event: Event,
+    region: Region;
 }
 
 
 export default class TopPlayers extends Component<{}, State> {
-    constructor(props: any) {
-        super(props);
+    constructor() {
+        super({});
         this.state = {
             players: [],
             event: events[0],
@@ -55,25 +52,24 @@ export default class TopPlayers extends Component<{}, State> {
                 response = await getThisWeekendTopPlayers(eventId);
             } else {
                 if (continentId) {
-                    response = await getThisWeekendTopPlayers(eventId, continentId);
+                    response = await getThisWeekendTopPlayers(eventId, continentId, true);
 
                 } else {
                     response = await getThisWeekendTopPlayers(eventId, regionId);
                 }
             }
             this.setState({players: response, isLoading: false});
-
         } catch (e) {
             this.setState({isLoading: false});
         }
     }
 
-    async handleEventChange(selectedEvent: any) {
+    async handleEventChange(selectedEvent: Event) {
         this.setState({event: selectedEvent});
         await this.getTopPlayers(selectedEvent.id, this.state.region.iso2);
     }
 
-    async handleRegionChange(event: any, newValue: any) {
+    async handleRegionChange(event: any, newValue: Region | null) {
         if (newValue) {
             this.setState({ region: newValue });
             if (newValue.continentId === "Continent") {

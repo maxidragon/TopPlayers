@@ -1,3 +1,5 @@
+import { Person } from "@wca/helpers";
+import { Competition, Competitor } from "./interfaces";
 import { wcaApiFetch } from "./request";
 
 export const getCompetitionsFromPeriod = async (start: string, end: string) => {
@@ -7,7 +9,7 @@ export const getCompetitionsFromPeriod = async (start: string, end: string) => {
     per_page: "100",
   });
   const response = await wcaApiFetch(`/competitions?${params}`);
-  const competitions: any = [];
+  const competitions: Competition[] = [];
   response.forEach((competition: any) => {
     competitions.push({
       id: competition.id,
@@ -29,8 +31,8 @@ export const getCompetitorsId = async (competitionId: string) => {
   const response = await wcaApiFetch(
     `/competitions/${competitionId}/wcif/public`
   );
-  const competitors: any = [];
-  response.persons.forEach((competitor: any) => {
+  const competitors: Competitor[] = [];
+  response.persons.forEach((competitor: Person) => {
     if (
       competitor.wcaId &&
       competitor.registration &&

@@ -6,8 +6,8 @@ import { getWeekendPeriod } from "./utils";
 
 export const getThisWeekendTopPlayers = async (
   cube: EventId,
-  country?: string,
-  continent?: string
+  region?: string,
+  isContinent?: boolean
 ) => {
   const period = getWeekendPeriod();
   const competitions = await getCompetitionsFromPeriod(
@@ -42,7 +42,7 @@ export const getThisWeekendTopPlayers = async (
         compDaysArray.push(weekday[d.getDay()]);
       }
       const compDays = compDaysArray.join(", ");
-      competitionInfo.events.forEach((event: any) => {
+      competitionInfo.events.forEach((event: Event) => {
         if (event.id === cube) {
           compEvent = event;
         }
@@ -81,9 +81,9 @@ export const getThisWeekendTopPlayers = async (
                     playerContinent = region.continentId;
                   }
                 });
-                if (country) {
+                if (region && !isContinent) {
                   if (checkedResult.nationalRanking <= 15) {
-                    if (competitor.countryIso2 === country) {
+                    if (competitor.countryIso2 === region) {
                       competitionTopPlayers.push({
                         name: competitor.name,
                         worldRank: checkedResult.worldRanking,
@@ -101,9 +101,9 @@ export const getThisWeekendTopPlayers = async (
                       });
                     }
                   }
-                } else if (continent) {
+                } else if (region && isContinent) {
                   if (checkedResult.continentalRanking <= 25) {
-                    if (playerContinent === continent) {
+                    if (playerContinent === region) {
                       competitionTopPlayers.push({
                         name: competitor.name,
                         worldRank: checkedResult.worldRanking,
