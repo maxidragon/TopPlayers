@@ -11,9 +11,9 @@ export const getWeekendPeriod = () => {
       break;
     case 1:
       nextThursday = new Date();
-      nextThursday.setDate(nextThursday.getDate() - 5);
+      nextThursday.setDate(nextThursday.getDate() + 3);
       nextMonday = new Date();
-      nextMonday.setDate(nextMonday.getDate() + 1);
+      nextMonday.setDate(nextMonday.getDate() + 8);
       break;
     case 4:
       nextThursday = new Date();
@@ -41,6 +41,5 @@ export const getWeekendPeriod = () => {
   const end = `${nextMonday.getFullYear()}-${(nextMonday.getMonth() + 1)
     .toString()
     .padStart(2, "0")}-${nextMonday.getDate().toString().padStart(2, "0")}`;
-
   return { start, end };
 };
