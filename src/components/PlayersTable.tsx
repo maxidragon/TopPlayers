@@ -63,7 +63,7 @@ const PlayersTable = (props: {
                 <TableCell>{player.countryRank}</TableCell>
               )}
               <TableCell>
-                {resultToString(player.prResult, props.event, player.format)}
+                {resultToString(+player.prResult, props.event, player.format)}
               </TableCell>
               <TableCell>{player.rounds}</TableCell>
               <TableCell>{player.compDays}</TableCell>
