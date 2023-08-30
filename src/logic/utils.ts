@@ -3,52 +3,58 @@ export const getWeekendPeriod = () => {
   let nextThursday, nextTuesday;
 
   switch (today) {
-    case 1: 
+    case 1:
       nextThursday = new Date();
-      nextThursday.setDate(nextThursday.getDate() + (4 - nextThursday.getDay() + 7) % 7);
+      nextThursday.setDate(
+        nextThursday.getDate() + ((4 - nextThursday.getDay() + 7) % 7),
+      );
       nextTuesday = new Date(nextThursday.getTime());
       nextTuesday.setDate(nextTuesday.getDate() + 4);
       break;
     case 2:
       nextThursday = new Date();
-      nextThursday.setDate(nextThursday.getDate() + (4 - nextThursday.getDay() + 7) % 7);
+      nextThursday.setDate(
+        nextThursday.getDate() + ((4 - nextThursday.getDay() + 7) % 7),
+      );
       nextTuesday = new Date();
       nextTuesday.setDate(nextThursday.getDate() + 6);
       break;
-    case 3: 
+    case 3:
       nextThursday = new Date();
       nextTuesday = new Date(nextThursday.getTime());
       nextTuesday.setDate(nextTuesday.getDate() + 6);
       break;
-    case 4: 
+    case 4:
       nextThursday = new Date();
-      nextThursday.setDate(nextThursday.getDate() + (4 - nextThursday.getDay() + 7) % 7);
+      nextThursday.setDate(
+        nextThursday.getDate() + ((4 - nextThursday.getDay() + 7) % 7),
+      );
       nextTuesday = new Date(nextThursday.getTime());
       nextTuesday.setDate(nextTuesday.getDate() + 6);
       break;
-    case 5: 
-      const todayCopy = new Date();
-      todayCopy.setDate(todayCopy.getDate() - 2);
+    case 5:
       nextThursday = new Date();
-      nextThursday.setDate(nextThursday.getDate() + (4 - nextThursday.getDay() + 7) % 7);
+      nextThursday.setDate(
+        nextThursday.getDate() + ((4 - nextThursday.getDay() + 7) % 7),
+      );
       nextTuesday = new Date(nextThursday.getTime());
       nextTuesday.setDate(nextTuesday.getDate() + 6);
       break;
-    case 6: 
-      const daysToLastThursday = (today + 7 - 4) % 7;
+    case 6:
       nextThursday = new Date();
-      nextThursday.setDate(nextThursday.getDate() - daysToLastThursday);
+      nextThursday.setDate(nextThursday.getDate() - ((today + 7 - 4) % 7));
       nextTuesday = new Date(nextThursday.getTime());
       nextTuesday.setDate(nextTuesday.getDate() + 4);
       break;
-    default: 
+    default:
       nextThursday = new Date();
-      nextThursday.setDate(nextThursday.getDate() + (4 - nextThursday.getDay() + 7) % 7);
+      nextThursday.setDate(
+        nextThursday.getDate() + ((4 - nextThursday.getDay() + 7) % 7),
+      );
       nextTuesday = new Date(nextThursday.getTime());
       nextTuesday.setDate(nextTuesday.getDate() + 4);
       break;
   }
-
 
   const start = `${nextThursday.getFullYear()}-${(nextThursday.getMonth() + 1)
     .toString()

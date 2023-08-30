@@ -1,4 +1,4 @@
-import { EventId, Event, Person } from "@wca/helpers";
+import { EventId, Event, Person, PersonalBest } from "@wca/helpers";
 import { getCompetitionsFromPeriod, getCompetitionInfo } from "./competitions";
 import { TopPlayer } from "./interfaces";
 import regions from "./regions";
@@ -7,12 +7,12 @@ import { getWeekendPeriod } from "./utils";
 export const getThisWeekendTopPlayers = async (
   cube: EventId,
   region?: string,
-  isContinent?: boolean
+  isContinent?: boolean,
 ) => {
   const period = getWeekendPeriod();
   const competitions = await getCompetitionsFromPeriod(
     period.start,
-    period.end
+    period.end,
   );
 
   const topPlayers: TopPlayer[] = [];
@@ -54,7 +54,14 @@ export const getThisWeekendTopPlayers = async (
           if (competitor.registration && competitor.registration.eventIds) {
             if (competitor.registration.eventIds.includes(cube)) {
               const personalRecords = competitor.personalBests;
-              let checkedResult: any = null;
+              let checkedResult: PersonalBest = {
+                eventId: cube,
+                best: 0,
+                worldRanking: 999999999,
+                continentalRanking: 999999999,
+                nationalRanking: 999999999,
+                type: "single",
+              };
               if (personalRecords === undefined) {
                 return;
               }
@@ -72,7 +79,7 @@ export const getThisWeekendTopPlayers = async (
                   }
                 }
               });
-              if (checkedResult !== null && compEvent) {
+              if (checkedResult !== undefined && compEvent) {
                 let playerCountry = "";
                 let playerContinent = "";
                 regions.forEach((region) => {
@@ -89,7 +96,7 @@ export const getThisWeekendTopPlayers = async (
                         worldRank: checkedResult.worldRanking,
                         countryRank: checkedResult.nationalRanking,
                         continentRank: checkedResult.continentalRanking,
-                        prResult: checkedResult.best,
+                        prResult: checkedResult.best.toString(),
                         format: checkedResult.type,
                         country: playerCountry,
                         id: competitor.wcaId as string,
@@ -109,7 +116,7 @@ export const getThisWeekendTopPlayers = async (
                         worldRank: checkedResult.worldRanking,
                         countryRank: checkedResult.nationalRanking,
                         continentRank: checkedResult.continentalRanking,
-                        prResult: checkedResult.best,
+                        prResult: checkedResult.best.toString(),
                         format: checkedResult.type,
                         country: playerCountry,
                         id: competitor.wcaId as string,
@@ -128,7 +135,7 @@ export const getThisWeekendTopPlayers = async (
                       worldRank: checkedResult.worldRanking,
                       countryRank: checkedResult.nationalRanking,
                       continentRank: checkedResult.continentalRanking,
-                      prResult: checkedResult.best,
+                      prResult: checkedResult.best.toString(),
                       format: checkedResult.type,
                       country: playerCountry,
                       id: competitor.wcaId as string,

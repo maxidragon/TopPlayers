@@ -1,9 +1,11 @@
+import { SyntheticEvent, useEffect, useState } from "react";
 import {
-    Autocomplete,
-    Box,
-    CircularProgress,
-    Paper, TextField,
-    Typography
+  Autocomplete,
+  Box,
+  CircularProgress,
+  Paper,
+  TextField,
+  Typography,
 } from "@mui/material";
 import EventSelect from "./EventSelect";
 import PlayersTable from "./PlayersTable";
@@ -11,115 +13,123 @@ import events from "../logic/events";
 import regions from "../logic/regions";
 import { getThisWeekendTopPlayers } from "../logic/players";
 import { EventId } from "@wca/helpers";
-import { Component } from "react";
 import { Event, Region, TopPlayer } from "../logic/interfaces";
 
-interface State {
-    isLoading: boolean;
-    players: TopPlayer[];
-    event: Event,
-    region: Region;
-}
+const TopPlayers = () => {
+  const [players, setPlayers] = useState<TopPlayer[]>([]);
+  const [selectedEvent, setSelectedEvent] = useState<Event>(events[0]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [region, setRegion] = useState<Region>({
+    id: "WR",
+    name: "World",
+    continentId: "_Multiple Continents",
+    iso2: "WR",
+  });
 
+  useEffect(() => {
+    getTopPlayers(selectedEvent.id, region.iso2);
+  }, []);
 
-export default class TopPlayers extends Component<{}, State> {
-    constructor() {
-        super({});
-        this.state = {
-            players: [],
-            event: events[0],
-            isLoading: true,
-            region: {
-                "id": "WR",
-                "name": "World",
-                "continentId": "_Multiple Continents",
-                "iso2": "WR",
-            },
+  const getTopPlayers = async (
+    eventId: EventId,
+    regionId = "WR",
+    continentId?: string,
+  ) => {
+    setIsLoading(true);
+    try {
+      let response;
+      if (regionId === "WR") {
+        response = await getThisWeekendTopPlayers(eventId);
+      } else {
+        if (continentId && regionId === "CR") {
+          response = await getThisWeekendTopPlayers(eventId, continentId, true);
+        } else {
+          response = await getThisWeekendTopPlayers(eventId, regionId);
         }
-        this.handleEventChange = this.handleEventChange.bind(this);
-        this.handleRegionChange = this.handleRegionChange.bind(this);
+      }
+      setPlayers(response);
+      setIsLoading(false);
+    } catch (e) {
+      setIsLoading(false);
     }
+  };
 
-    componentDidMount() {
-        this.getTopPlayers(this.state.event.id);
+  const handleEventChange = async (newEvent: Event) => {
+    setSelectedEvent(newEvent);
+    await getTopPlayers(newEvent.id, region.iso2);
+  };
+
+  const handleRegionChange = async (
+    event: SyntheticEvent,
+    newValue: Region | null,
+  ) => {
+    if (newValue) {
+      setRegion(newValue);
+      if (newValue.continentId === "Continent") {
+        await getTopPlayers(selectedEvent.id, "CR", newValue.iso2);
+      } else {
+        await getTopPlayers(selectedEvent.id, newValue.iso2);
+      }
     }
+  };
 
-    async getTopPlayers(eventId: EventId, regionId: string = "WR", continentId?: string) {
-        this.setState({isLoading: true});
-        try {
-            let response;
-            if (regionId === "WR") {
-                response = await getThisWeekendTopPlayers(eventId);
-            } else {
-                if (continentId) {
-                    response = await getThisWeekendTopPlayers(eventId, continentId, true);
-
-                } else {
-                    response = await getThisWeekendTopPlayers(eventId, regionId);
-                }
-            }
-            this.setState({players: response, isLoading: false});
-        } catch (e) {
-            this.setState({isLoading: false});
-        }
-    }
-
-    async handleEventChange(selectedEvent: Event) {
-        this.setState({event: selectedEvent});
-        await this.getTopPlayers(selectedEvent.id, this.state.region.iso2);
-    }
-
-    async handleRegionChange(event: any, newValue: Region | null) {
-        if (newValue) {
-            this.setState({ region: newValue });
-            if (newValue.continentId === "Continent") {
-                //@ts-ignore
-                await this.getTopPlayers(this.state.event.id, null, newValue.iso2);
-            } else {
-                await this.getTopPlayers(this.state.event.id, newValue.iso2);
-            }
-        }
-    }
-
-
-    render() {
-        return (
-            <div style={{textAlign: 'center'}}>
-                <Typography variant="h5" sx={{marginBottom: '0.2em'}}>
-                    Top players for this weekend
-                </Typography>
-                <Box sx={{
-                    minWidth: 120,
-                    maxWidth: 200,
-                    display: 'flex !important',
-                    flexDirection: 'column !important',
-                    justifyContent: 'center !important',
-                    alignItems: 'center !important',
-                    margin: 'auto',
-                }}>
-                    <Autocomplete
-                        id="regionSelect"
-                        options={regions}
-                        getOptionLabel={(option) => option.name}
-                        value={this.state.region}
-                        onChange={this.handleRegionChange}
-                        renderInput={(params) => (
-                            <TextField {...params} label="Region" variant="outlined" sx={{width: 180}}/>
-                        )}
-                    />
-                </Box>
-                <EventSelect selectedEvent={this.state.event} eventChange={this.handleEventChange}/>
-                <div>
-                    <Paper>
-                        {this.state.isLoading ? <div><Box sx={{textAlign: 'center'}}>
-                                <CircularProgress/>
-                            </Box></div> :
-                            this.state.players.length === 0 ? <div>There are no top players for this event</div> :
-                                <PlayersTable players={this.state.players} region={this.state.region}
-                                              event={this.state.event.id}/>}
-                    </Paper>
-                </div>
+  return (
+    <div style={{ textAlign: "center" }}>
+      <Typography variant="h5" sx={{ marginBottom: "0.2em" }}>
+        Top players for this weekend
+      </Typography>
+      <Box
+        sx={{
+          minWidth: 120,
+          maxWidth: 200,
+          display: "flex !important",
+          flexDirection: "column !important",
+          justifyContent: "center !important",
+          alignItems: "center !important",
+          margin: "auto",
+        }}
+      >
+        <Autocomplete
+          id="regionSelect"
+          options={regions}
+          getOptionLabel={(option) => option.name}
+          value={region}
+          onChange={handleRegionChange}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Region"
+              variant="outlined"
+              sx={{ width: 180 }}
+            />
+          )}
+        />
+      </Box>
+      <EventSelect
+        selectedEvent={selectedEvent}
+        eventChange={handleEventChange}
+      />
+      <div>
+        <Paper>
+          {isLoading ? (
+            <div>
+              <Box sx={{ textAlign: "center" }}>
+                <CircularProgress />
+              </Box>
             </div>
-        );
-    }
-}
+          ) : players.length === 0 ? (
+            <div>There are no top players for this event</div>
+          ) : (
+            <PlayersTable
+              players={players}
+              region={region}
+              event={selectedEvent.id}
+            />
+          )}
+        </Paper>
+      </div>
+    </div>
+  );
+};
+
+export default TopPlayers;
