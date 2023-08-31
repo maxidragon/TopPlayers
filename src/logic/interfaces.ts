@@ -9,6 +9,7 @@ export interface TopPlayer {
   format: string;
   country: string;
   id: string;
+  compId: string;
   profile: string;
   competition: string;
   compWebsite: string;

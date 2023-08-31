@@ -39,7 +39,7 @@ const PlayersTable = (props: {
         </TableHead>
         <TableBody>
           {props.players.map((player: TopPlayer) => (
-            <TableRow key={player.id}>
+            <TableRow key={`${player.compId}-${player.id}`}>
               <TableCell>
                 <Link href={player.profile} underline="none" target="_blank">
                   {player.name}
