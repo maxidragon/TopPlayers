@@ -6,6 +6,7 @@ import { getWeekendPeriod } from "./utils";
 
 export const getThisWeekendTopPlayers = async (
   cube: EventId,
+  type: string = "average",
   region?: string,
   isContinent?: boolean,
 ) => {
@@ -67,15 +68,8 @@ export const getThisWeekendTopPlayers = async (
               }
               personalRecords.forEach((record) => {
                 if (record.eventId === cube) {
-                  const bldEvents = ["333bf", "444bf", "555bf", "333mbf"];
-                  if (bldEvents.includes(cube)) {
-                    if (record.type === "single") {
-                      checkedResult = record;
-                    }
-                  } else {
-                    if (record.type === "average") {
-                      checkedResult = record;
-                    }
+                  if (record.type === type) {
+                    checkedResult = record;
                   }
                 }
               });

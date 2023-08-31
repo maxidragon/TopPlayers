@@ -2,6 +2,7 @@ import { SyntheticEvent, useEffect, useState } from "react";
 import {
   Autocomplete,
   Box,
+  Button,
   CircularProgress,
   Paper,
   TextField,
@@ -16,6 +17,7 @@ import { EventId } from "@wca/helpers";
 import { Event, Region, TopPlayer } from "../logic/interfaces";
 
 const TopPlayers = () => {
+  const bldEvents = ["333mbf", "444bf", "555bf", "333bf"];
   const [players, setPlayers] = useState<TopPlayer[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<Event>(events[0]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -25,13 +27,22 @@ const TopPlayers = () => {
     continentId: "_Multiple Continents",
     iso2: "WR",
   });
+  const [type, setType] = useState<string>("average");
 
   useEffect(() => {
-    getTopPlayers(selectedEvent.id, region.iso2);
+    let typeParam = "average";
+    if (bldEvents.includes(selectedEvent.id)) {
+      typeParam = "single";
+      setType("single");
+    } else {
+      setType("average");
+    }
+    getTopPlayers(selectedEvent.id, typeParam, region.iso2);
   }, []);
 
   const getTopPlayers = async (
     eventId: EventId,
+    typeParam: string,
     regionId = "WR",
     continentId?: string,
   ) => {
@@ -39,12 +50,21 @@ const TopPlayers = () => {
     try {
       let response;
       if (regionId === "WR") {
-        response = await getThisWeekendTopPlayers(eventId);
+        response = await getThisWeekendTopPlayers(eventId, typeParam);
       } else {
         if (continentId && regionId === "CR") {
-          response = await getThisWeekendTopPlayers(eventId, continentId, true);
+          response = await getThisWeekendTopPlayers(
+            eventId,
+            typeParam,
+            continentId,
+            true,
+          );
         } else {
-          response = await getThisWeekendTopPlayers(eventId, regionId);
+          response = await getThisWeekendTopPlayers(
+            eventId,
+            typeParam,
+            regionId,
+          );
         }
       }
       setPlayers(response);
@@ -55,8 +75,15 @@ const TopPlayers = () => {
   };
 
   const handleEventChange = async (newEvent: Event) => {
+    let typeParam = "average";
+    if (bldEvents.includes(newEvent.id)) {
+      typeParam = "single";
+      setType("single");
+    } else {
+      setType("average");
+    }
     setSelectedEvent(newEvent);
-    await getTopPlayers(newEvent.id, region.iso2);
+    await getTopPlayers(newEvent.id, typeParam, region.iso2);
   };
 
   const handleRegionChange = async (
@@ -73,10 +100,20 @@ const TopPlayers = () => {
     }
   };
 
+  const handleTypeChange = async () => {
+    if (type === "average") {
+      setType("single");
+      getTopPlayers(selectedEvent.id, "single", region.iso2);
+    } else {
+      setType("average");
+      getTopPlayers(selectedEvent.id, "average", region.iso2);
+    }
+  };
+
   return (
     <div style={{ textAlign: "center" }}>
       <Typography variant="h5" sx={{ marginBottom: "0.2em" }}>
-        Top players for this weekend
+        Top players for this weekend ({type})
       </Typography>
       <Box
         sx={{
@@ -109,6 +146,11 @@ const TopPlayers = () => {
         selectedEvent={selectedEvent}
         eventChange={handleEventChange}
       />
+      {selectedEvent.id !== "333mbf" && (
+        <Button variant="contained" onClick={handleTypeChange}>
+          {type === "average" ? "By single" : "By average"}{" "}
+        </Button>
+      )}
       <div>
         <Paper>
           {isLoading ? (
