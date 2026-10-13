@@ -1,5 +1,10 @@
-import { Person } from "@wca/helpers";
-import { Competition, CompetitionInfo, Competitor } from "./interfaces";
+import {
+  Competition,
+  CompetitionInfo,
+  Competitor,
+  Wcif,
+  WcifPerson,
+} from "./interfaces";
 import { wcaApiFetch } from "./request";
 
 export const getCompetitionsFromPeriod = async (start: string, end: string) => {
@@ -22,17 +27,19 @@ export const getCompetitionsFromPeriod = async (start: string, end: string) => {
   return competitions;
 };
 
-export const getCompetitionInfo = async (id: string) => {
-  const response = await wcaApiFetch(`/competitions/${id}/wcif/public`);
-  return response;
+// Pinned to major version 2: the unversioned endpoints serve WCIF v1, which
+// is deprecated, and /wcif/latest will move to future major versions.
+const wcifPath = (competitionId: string) =>
+  `/competitions/${competitionId}/wcif/version/2`;
+
+export const getCompetitionInfo = async (id: string): Promise<Wcif> => {
+  return wcaApiFetch(wcifPath(id));
 };
 
 export const getCompetitorsId = async (competitionId: string) => {
-  const response = await wcaApiFetch(
-    `/competitions/${competitionId}/wcif/public`,
-  );
+  const response = await getCompetitionInfo(competitionId);
   const competitors: Competitor[] = [];
-  response.persons.forEach((competitor: Person) => {
+  response.persons.forEach((competitor: WcifPerson) => {
     if (
       competitor.wcaId &&
       competitor.registration &&

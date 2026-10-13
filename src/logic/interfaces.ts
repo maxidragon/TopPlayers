@@ -50,3 +50,41 @@ export interface CompetitionInfo {
   start_date: string;
   end_date: string;
 }
+
+// Subset of WCIF v2 read by this app. @wca/helpers still describes WCIF v1,
+// where PersonalBest.value was called PersonalBest.best.
+// Spec: https://github.com/thewca/wcif/blob/latest/specification.md
+export interface WcifPersonalBest {
+  eventId: EventId;
+  value: number;
+  type: "single" | "average";
+  worldRanking: number;
+  continentalRanking: number;
+  nationalRanking: number;
+}
+
+export interface WcifPerson {
+  name: string;
+  wcaId: string | null;
+  countryIso2: string;
+  registration: { eventIds: EventId[] } | null;
+  personalBests?: WcifPersonalBest[];
+}
+
+export interface WcifRound {
+  id: string;
+  linkedRounds: string[] | null;
+}
+
+export interface WcifEvent {
+  id: EventId;
+  rounds: WcifRound[];
+}
+
+export interface Wcif {
+  formatVersion: string;
+  id: string;
+  name: string;
+  events: WcifEvent[];
+  persons: WcifPerson[];
+}
