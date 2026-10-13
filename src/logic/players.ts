@@ -1,6 +1,11 @@
-import { EventId, Event, Person, PersonalBest } from "@wca/helpers";
+import { EventId } from "@wca/helpers";
 import { getCompetitionsFromPeriod, getCompetitionInfo } from "./competitions";
-import { TopPlayer } from "./interfaces";
+import {
+  TopPlayer,
+  WcifEvent,
+  WcifPerson,
+  WcifPersonalBest,
+} from "./interfaces";
 import regions from "./regions";
 import { getWeekendPeriod } from "./utils";
 
@@ -21,7 +26,7 @@ export const getThisWeekendTopPlayers = async (
   for (const competition of competitions) {
     if (competition.events.includes(cube)) {
       const competitionInfo = await getCompetitionInfo(competition.id);
-      let compEvent: Event | null = null;
+      let compEvent: WcifEvent | null = null;
       const weekday = [
         "Sunday",
         "Monday",
@@ -43,7 +48,7 @@ export const getThisWeekendTopPlayers = async (
         compDaysArray.push(weekday[d.getDay()]);
       }
       const compDays = compDaysArray.join(", ");
-      competitionInfo.events.forEach((event: Event) => {
+      competitionInfo.events.forEach((event: WcifEvent) => {
         if (event.id === cube) {
           compEvent = event;
         }
@@ -51,13 +56,13 @@ export const getThisWeekendTopPlayers = async (
       if (compEvent && competitionInfo.persons) {
         const competitors = competitionInfo.persons;
         const competitionTopPlayers: TopPlayer[] = [];
-        competitors.map(async (competitor: Person) => {
+        competitors.map(async (competitor: WcifPerson) => {
           if (competitor.registration && competitor.registration.eventIds) {
             if (competitor.registration.eventIds.includes(cube)) {
               const personalRecords = competitor.personalBests;
-              let checkedResult: PersonalBest = {
+              let checkedResult: WcifPersonalBest = {
                 eventId: cube,
-                best: 0,
+                value: 0,
                 worldRanking: 999999999,
                 continentalRanking: 999999999,
                 nationalRanking: 999999999,
@@ -90,7 +95,7 @@ export const getThisWeekendTopPlayers = async (
                         worldRank: checkedResult.worldRanking,
                         countryRank: checkedResult.nationalRanking,
                         continentRank: checkedResult.continentalRanking,
-                        prResult: checkedResult.best.toString(),
+                        prResult: checkedResult.value.toString(),
                         format: checkedResult.type,
                         country: playerCountry,
                         compId: competitionInfo.id,
@@ -98,7 +103,7 @@ export const getThisWeekendTopPlayers = async (
                         profile: `https://www.worldcubeassociation.org/persons/${competitor.wcaId}`,
                         competition: competitionInfo.name,
                         compWebsite: `https://worldcubeassociation.org/competitions/${competitionInfo.id}`,
-                        rounds: compEvent.rounds.length as number,
+                        rounds: compEvent.rounds.length,
                         compDays: compDays,
                       });
                     }
@@ -111,7 +116,7 @@ export const getThisWeekendTopPlayers = async (
                         worldRank: checkedResult.worldRanking,
                         countryRank: checkedResult.nationalRanking,
                         continentRank: checkedResult.continentalRanking,
-                        prResult: checkedResult.best.toString(),
+                        prResult: checkedResult.value.toString(),
                         format: checkedResult.type,
                         country: playerCountry,
                         compId: competitionInfo.id,
@@ -131,7 +136,7 @@ export const getThisWeekendTopPlayers = async (
                       worldRank: checkedResult.worldRanking,
                       countryRank: checkedResult.nationalRanking,
                       continentRank: checkedResult.continentalRanking,
-                      prResult: checkedResult.best.toString(),
+                      prResult: checkedResult.value.toString(),
                       format: checkedResult.type,
                       country: playerCountry,
                       compId: competitionInfo.id,
